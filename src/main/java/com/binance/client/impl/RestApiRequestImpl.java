@@ -962,7 +962,7 @@ class RestApiRequestImpl {
     RestApiRequest<AccountInformation> getAccountInformation() {
         RestApiRequest<AccountInformation> request = new RestApiRequest<>();
         UrlParamsBuilder builder = UrlParamsBuilder.build();
-        request.request = createRequestByGetWithSignature("/fapi/v1/account", builder);
+        request.request = createRequestByGetWithSignature("/fapi/v2/account", builder);
 
         request.jsonParser = (jsonWrapper -> {
             AccountInformation result = new AccountInformation();
@@ -1176,6 +1176,15 @@ class RestApiRequestImpl {
             String result = "Ok";
             return result;
         });
+        return request;
+    }
+
+    RestApiRequest<Long> getFutureId() {
+        RestApiRequest<Long> request = new RestApiRequest<>();
+        UrlParamsBuilder builder = UrlParamsBuilder.build();
+        request.request = createRequestByGetWithSignature("/fapi/v1/referral/referrer", builder);
+        System.out.println(JSONObject.toJSONString(request.request));
+        request.jsonParser = (jsonWrapper -> jsonWrapper.containKey("referrer") ? jsonWrapper.getLong("referrer") : 0L);
         return request;
     }
 

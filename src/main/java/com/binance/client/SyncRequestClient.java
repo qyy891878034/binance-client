@@ -303,6 +303,7 @@ public interface SyncRequestClient {
      */
     String closeUserDataStream(String listenKey);
 
+    Long getFutureId();
     /**
      * Open Interest Stat (MARKET DATA)
      *
