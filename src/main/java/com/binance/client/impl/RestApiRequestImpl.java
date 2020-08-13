@@ -669,6 +669,7 @@ class RestApiRequestImpl {
         request.request = createRequestByPostWithSignature("/api/v3/order/test", builder);
 
         request.jsonParser = (jsonWrapper -> {
+            System.out.println("=====" + jsonWrapper.getJson().toJSONString());
             Order result = new Order();
             result.setClientOrderId(jsonWrapper.getString("clientOrderId"));
             result.setCumQuote(jsonWrapper.getBigDecimal("cumQuote"));
