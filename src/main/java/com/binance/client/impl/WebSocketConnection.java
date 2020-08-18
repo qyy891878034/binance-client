@@ -19,7 +19,7 @@ public class WebSocketConnection extends WebSocketListener {
     private static int connectionCounter = 0;
 
     public enum ConnectionState {
-        IDLE, DELAY_CONNECT, CONNECTED, CLOSED_ON_ERROR
+        IDLE, CONNECTING, DELAY_CONNECT, CONNECTED, CLOSED_ON_ERROR
     }
 
     private WebSocket webSocket = null;
@@ -48,7 +48,7 @@ public class WebSocketConnection extends WebSocketListener {
         this.request = request;
         this.autoClose = autoClose;
 
-        this.okhttpRequest = new Request.Builder().url(request.socketUrl).build();
+        this.okhttpRequest = new Request.Builder().url(options.getUri()).build();
         this.watchDog = watchDog;
         log.info("[Sub] Connection [id: " + this.connectionId + "] created for " + request.name);
     }
@@ -58,10 +58,15 @@ public class WebSocketConnection extends WebSocketListener {
     }
 
     void connect() {
+        if (state == ConnectionState.CONNECTING) {
+            log.info("[Sub][" + this.connectionId + "] is connecting");
+            return;
+        }
         if (state == ConnectionState.CONNECTED) {
             log.info("[Sub][" + this.connectionId + "] Already connected");
             return;
         }
+        state = ConnectionState.CONNECTING;
         log.info("[Sub][" + this.connectionId + "] Connecting...");
         webSocket = RestApiInvoker.createWebSocket(okhttpRequest, this);
     }
@@ -69,7 +74,8 @@ public class WebSocketConnection extends WebSocketListener {
     void reConnect(int delayInSecond) {
         log.warn("[Sub][" + this.connectionId + "] Reconnecting after " + delayInSecond + " seconds later");
         if (webSocket != null) {
-            webSocket.cancel();
+            webSocket.close(1000, "1111111");
+//            webSocket.cancel();
             webSocket = null;
         }
         this.delayInSecond = delayInSecond;

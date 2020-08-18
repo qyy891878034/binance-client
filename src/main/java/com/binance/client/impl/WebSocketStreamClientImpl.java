@@ -170,9 +170,9 @@ public class WebSocketStreamClientImpl implements SubscriptionClient {
     @Override
     public void subscribeUserDataEvent(String listenKey,
             SubscriptionListener<JSONObject> subscriptionListener,
-            SubscriptionErrorHandler errorHandler, String socketUrl) {
+            SubscriptionErrorHandler errorHandler) {
         createConnection(
-                requestImpl.subscribeUserDataEvent(listenKey, subscriptionListener, errorHandler, socketUrl));
+                requestImpl.subscribeUserDataEvent(listenKey, subscriptionListener, errorHandler));
     }
 
 

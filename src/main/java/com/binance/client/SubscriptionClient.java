@@ -235,7 +235,7 @@ public interface SubscriptionClient {
      *                     or error happen between client and Binance server.
      */
     void subscribeUserDataEvent(String listenKey,
-                                SubscriptionListener<JSONObject> callback, SubscriptionErrorHandler errorHandler, String socketUrl);
+                                SubscriptionListener<JSONObject> callback, SubscriptionErrorHandler errorHandler);
 
 
 }

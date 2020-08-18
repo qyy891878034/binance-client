@@ -450,11 +450,11 @@ class WebsocketRequestImpl {
     // UserDataUpdateEvent
     WebsocketRequest<JSONObject> subscribeUserDataEvent(String listenKey,
             SubscriptionListener<JSONObject> subscriptionListener,
-            SubscriptionErrorHandler errorHandler, String socketUrl) {
+            SubscriptionErrorHandler errorHandler) {
         InputChecker.checker()
                 .shouldNotNull(listenKey, "listenKey")
                 .shouldNotNull(subscriptionListener, "listener");
-        WebsocketRequest<JSONObject> request = new WebsocketRequest<>(subscriptionListener, errorHandler, socketUrl);
+        WebsocketRequest<JSONObject> request = new WebsocketRequest<>(subscriptionListener, errorHandler);
         request.name = "***User Data***"; 
         request.connectionHandler = (connection) -> connection.send(Channels.userDataChannel(listenKey));
 
