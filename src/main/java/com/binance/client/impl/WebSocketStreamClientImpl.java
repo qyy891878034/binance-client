@@ -1,5 +1,6 @@
 package com.binance.client.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.binance.client.SubscriptionClient;
 import com.binance.client.SubscriptionErrorHandler;
 import com.binance.client.SubscriptionListener;
@@ -168,10 +169,10 @@ public class WebSocketStreamClientImpl implements SubscriptionClient {
 
     @Override
     public void subscribeUserDataEvent(String listenKey,
-            SubscriptionListener<UserDataUpdateEvent> subscriptionListener, 
-            SubscriptionErrorHandler errorHandler) {
+            SubscriptionListener<JSONObject> subscriptionListener,
+            SubscriptionErrorHandler errorHandler, String socketUrl) {
         createConnection(
-                requestImpl.subscribeUserDataEvent(listenKey, subscriptionListener, errorHandler));
+                requestImpl.subscribeUserDataEvent(listenKey, subscriptionListener, errorHandler, socketUrl));
     }
 
 

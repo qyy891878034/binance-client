@@ -2,6 +2,7 @@ package com.binance.client;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
 import com.binance.client.impl.BinanceApiInternalFactory;
 import com.binance.client.model.enums.CandlestickInterval;
 import com.binance.client.model.event.AggregateTradeEvent;
@@ -234,7 +235,7 @@ public interface SubscriptionClient {
      *                     or error happen between client and Binance server.
      */
     void subscribeUserDataEvent(String listenKey,
-            SubscriptionListener<UserDataUpdateEvent> callback, SubscriptionErrorHandler errorHandler);
+                                SubscriptionListener<JSONObject> callback, SubscriptionErrorHandler errorHandler, String socketUrl);
 
 
 }

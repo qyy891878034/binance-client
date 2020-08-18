@@ -3,6 +3,7 @@ package com.binance.client.impl;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
 import com.binance.client.impl.utils.JsonWrapper;
 import com.binance.client.impl.utils.JsonWrapperArray;
 
@@ -446,81 +447,83 @@ class WebsocketRequestImpl {
         return request;
     }
 
-    WebsocketRequest<UserDataUpdateEvent> subscribeUserDataEvent(String listenKey,
-            SubscriptionListener<UserDataUpdateEvent> subscriptionListener,
-            SubscriptionErrorHandler errorHandler) {
+    // UserDataUpdateEvent
+    WebsocketRequest<JSONObject> subscribeUserDataEvent(String listenKey,
+            SubscriptionListener<JSONObject> subscriptionListener,
+            SubscriptionErrorHandler errorHandler, String socketUrl) {
         InputChecker.checker()
                 .shouldNotNull(listenKey, "listenKey")
                 .shouldNotNull(subscriptionListener, "listener");
-        WebsocketRequest<UserDataUpdateEvent> request = new WebsocketRequest<>(subscriptionListener, errorHandler);
+        WebsocketRequest<JSONObject> request = new WebsocketRequest<>(subscriptionListener, errorHandler, socketUrl);
         request.name = "***User Data***"; 
         request.connectionHandler = (connection) -> connection.send(Channels.userDataChannel(listenKey));
 
         request.jsonParser = (jsonWrapper) -> {
-            UserDataUpdateEvent result = new UserDataUpdateEvent();
-            result.setEventType(jsonWrapper.getString("e"));
-            result.setEventTime(jsonWrapper.getLong("E"));
-            result.setTransactionTime(jsonWrapper.getLong("T"));
-
-            if(jsonWrapper.getString("e").equals("ACCOUNT_UPDATE")) {
-                AccountUpdate accountUpdate = new AccountUpdate();
-
-                List<BalanceUpdate> balanceList = new LinkedList<>();
-                JsonWrapperArray dataArray = jsonWrapper.getJsonObject("a").getJsonArray("B");
-                dataArray.forEach(item -> {
-                    BalanceUpdate balance = new BalanceUpdate();
-                    balance.setAsset(item.getString("a"));
-                    balance.setWalletBalance(item.getBigDecimal("wb"));
-                    balanceList.add(balance);
-                });
-                accountUpdate.setBalances(balanceList);
-
-                List<PositionUpdate> positionList = new LinkedList<>();
-                JsonWrapperArray datalist = jsonWrapper.getJsonObject("a").getJsonArray("B");
-                datalist.forEach(item -> {
-                    PositionUpdate position = new PositionUpdate();
-                    position.setSymbol(item.getString("s"));
-                    position.setAmount(item.getBigDecimal("pa"));
-                    position.setEntryPrice(item.getBigDecimal("ep"));
-                    position.setPreFee(item.getBigDecimal("cr"));
-                    position.setUnrealizedPnl(item.getBigDecimal("up"));
-                    positionList.add(position);
-                });
-                accountUpdate.setPositions(positionList);
-
-                result.setAccountUpdate(accountUpdate); 
-
-            } else if(jsonWrapper.getString("e").equals("ORDER_TRADE_UPDATE")) {
-                OrderUpdate orderUpdate = new OrderUpdate();
-                JsonWrapper jsondata = jsonWrapper.getJsonObject("o");
-                orderUpdate.setSymbol(jsondata.getString("s"));
-                orderUpdate.setClientOrderId(jsondata.getString("c"));
-                orderUpdate.setSide(jsondata.getString("S"));
-                orderUpdate.setType(jsondata.getString("o"));
-                orderUpdate.setTimeInForce(jsondata.getString("f"));
-                orderUpdate.setOrigQty(jsondata.getBigDecimal("q"));
-                orderUpdate.setPrice(jsondata.getBigDecimal("p"));
-                orderUpdate.setAvgPrice(jsondata.getBigDecimal("ap"));
-                orderUpdate.setStopPrice(jsondata.getBigDecimal("sp"));
-                orderUpdate.setExecutionType(jsondata.getString("x"));
-                orderUpdate.setOrderStatus(jsondata.getString("X"));
-                orderUpdate.setOrderId(jsondata.getLong("i"));
-                orderUpdate.setLastFilledQty(jsondata.getBigDecimal("l"));
-                orderUpdate.setCumulativeFilledQty(jsondata.getBigDecimal("z"));
-                orderUpdate.setLastFilledPrice(jsondata.getBigDecimal("L"));
-                orderUpdate.setCommissionAsset(jsondata.getString("N"));
-                orderUpdate.setCommissionAmount(jsondata.getLong("n"));
-                orderUpdate.setOrderTradeTime(jsondata.getLong("T"));
-                orderUpdate.setTradeID(jsondata.getLong("t"));
-                orderUpdate.setBidsNotional(jsondata.getBigDecimal("b"));
-                orderUpdate.setAsksNotional(jsondata.getBigDecimal("a"));
-                orderUpdate.setIsMarkerSide(jsondata.getBoolean("m"));
-                orderUpdate.setIsReduceOnly(jsondata.getBoolean("R"));
-                orderUpdate.setWorkingType(jsondata.getString("wt"));
-                result.setOrderUpdate(orderUpdate); 
-            }
+            return jsonWrapper.getJson();
+//            UserDataUpdateEvent result = new UserDataUpdateEvent();
+//            result.setEventType(jsonWrapper.getString("e"));
+//            result.setEventTime(jsonWrapper.getLong("E"));
+//            result.setTransactionTime(jsonWrapper.getLong("T"));
+//
+//            if(jsonWrapper.getString("e").equals("ACCOUNT_UPDATE")) {
+//                AccountUpdate accountUpdate = new AccountUpdate();
+//
+//                List<BalanceUpdate> balanceList = new LinkedList<>();
+//                JsonWrapperArray dataArray = jsonWrapper.getJsonObject("a").getJsonArray("B");
+//                dataArray.forEach(item -> {
+//                    BalanceUpdate balance = new BalanceUpdate();
+//                    balance.setAsset(item.getString("a"));
+//                    balance.setWalletBalance(item.getBigDecimal("wb"));
+//                    balanceList.add(balance);
+//                });
+//                accountUpdate.setBalances(balanceList);
+//
+//                List<PositionUpdate> positionList = new LinkedList<>();
+//                JsonWrapperArray datalist = jsonWrapper.getJsonObject("a").getJsonArray("B");
+//                datalist.forEach(item -> {
+//                    PositionUpdate position = new PositionUpdate();
+//                    position.setSymbol(item.getString("s"));
+//                    position.setAmount(item.getBigDecimal("pa"));
+//                    position.setEntryPrice(item.getBigDecimal("ep"));
+//                    position.setPreFee(item.getBigDecimal("cr"));
+//                    position.setUnrealizedPnl(item.getBigDecimal("up"));
+//                    positionList.add(position);
+//                });
+//                accountUpdate.setPositions(positionList);
+//
+//                result.setAccountUpdate(accountUpdate);
+//
+//            } else if(jsonWrapper.getString("e").equals("ORDER_TRADE_UPDATE")) {
+//                OrderUpdate orderUpdate = new OrderUpdate();
+//                JsonWrapper jsondata = jsonWrapper.getJsonObject("o");
+//                orderUpdate.setSymbol(jsondata.getString("s"));
+//                orderUpdate.setClientOrderId(jsondata.getString("c"));
+//                orderUpdate.setSide(jsondata.getString("S"));
+//                orderUpdate.setType(jsondata.getString("o"));
+//                orderUpdate.setTimeInForce(jsondata.getString("f"));
+//                orderUpdate.setOrigQty(jsondata.getBigDecimal("q"));
+//                orderUpdate.setPrice(jsondata.getBigDecimal("p"));
+//                orderUpdate.setAvgPrice(jsondata.getBigDecimal("ap"));
+//                orderUpdate.setStopPrice(jsondata.getBigDecimal("sp"));
+//                orderUpdate.setExecutionType(jsondata.getString("x"));
+//                orderUpdate.setOrderStatus(jsondata.getString("X"));
+//                orderUpdate.setOrderId(jsondata.getLong("i"));
+//                orderUpdate.setLastFilledQty(jsondata.getBigDecimal("l"));
+//                orderUpdate.setCumulativeFilledQty(jsondata.getBigDecimal("z"));
+//                orderUpdate.setLastFilledPrice(jsondata.getBigDecimal("L"));
+//                orderUpdate.setCommissionAsset(jsondata.getString("N"));
+//                orderUpdate.setCommissionAmount(jsondata.getLong("n"));
+//                orderUpdate.setOrderTradeTime(jsondata.getLong("T"));
+//                orderUpdate.setTradeID(jsondata.getLong("t"));
+//                orderUpdate.setBidsNotional(jsondata.getBigDecimal("b"));
+//                orderUpdate.setAsksNotional(jsondata.getBigDecimal("a"));
+//                orderUpdate.setIsMarkerSide(jsondata.getBoolean("m"));
+//                orderUpdate.setIsReduceOnly(jsondata.getBoolean("R"));
+//                orderUpdate.setWorkingType(jsondata.getString("wt"));
+//                result.setOrderUpdate(orderUpdate);
+//            }
             
-            return result;
+//            return result;
         };
         return request;
     }
