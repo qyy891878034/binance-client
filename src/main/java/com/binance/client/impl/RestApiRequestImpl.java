@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -1228,7 +1229,14 @@ class RestApiRequestImpl {
         UrlParamsBuilder builder = UrlParamsBuilder.build();
         request.request = createRequestByGetWithSignature("/fapi/v1/referral/referrer", builder);
         System.out.println(JSONObject.toJSONString(request.request));
-        request.jsonParser = (jsonWrapper -> jsonWrapper.containKey("referrer") ? jsonWrapper.getLong("referrer") : 0L);
+        request.jsonParser = (jsonWrapper -> {
+            try {
+                return jsonWrapper.containKey("referrer") ? jsonWrapper.getLong("referrer") : 0L;
+            } catch (Exception e) {
+                System.out.println("getFutureId error = " + e.getLocalizedMessage());
+                return 0L;
+            }
+        });
         return request;
     }
 
