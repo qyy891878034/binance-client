@@ -78,6 +78,11 @@ public class WebSocketConnection extends WebSocketListener {
 //            webSocket.cancel();
             webSocket = null;
         }
+        if (delayInSecond <= 0) {
+            state = ConnectionState.IDLE;
+            connect();
+            return;
+        }
         this.delayInSecond = delayInSecond;
         state = ConnectionState.DELAY_CONNECT;
     }
